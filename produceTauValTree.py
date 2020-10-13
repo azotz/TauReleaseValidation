@@ -84,7 +84,7 @@ def isGenLepton(lep_cand, pid):
         abs(lep_cand.eta()) < 2.3
     )
 
-def MatchTausToJets(refObjs):
+def MatchTausToJets(refObjs, dR2=0.25):
 
   # For each Jet, get the closest RecoTau
   Match = {}
@@ -92,7 +92,7 @@ def MatchTausToJets(refObjs):
       tau, _dr2_ = bestMatch(refObj, taus) # dR2=0.25  ==  dR=0.5
       for tauidx,itau in enumerate(taus):
         if itau==tau: break
-      if _dr2_ < 0.25: Match[jetidx]=tauidx
+      if _dr2_ < dR2: Match[jetidx]=tauidx
 
   # Is the same Tau assinged to more than one Jet?
   DoubleCheck = []
@@ -310,6 +310,8 @@ if __name__ == '__main__':
     evtid = 0
 
     NMatchedTaus = 0
+    dR2 = 0.2**2
+    dR2_jetoverlap = 0.5**2
 
     tauH = Handle('vector<pat::Tau>')
     vertexH = Handle('std::vector<reco::Vertex>')
@@ -431,7 +433,7 @@ if __name__ == '__main__':
                         abs(jet.eta()) < 2.3 and
                         jet.pt() < 200.5)
                 ]
-                jets = removeOverlap(all_jets, genLeptons)
+                jets = removeOverlap(all_jets, genLeptons, dR2_jetoverlap)
                 refObjs = copy.deepcopy(jets)
             else:
                 event.getByLabel("slimmedGenJets", genJetH)
@@ -441,7 +443,7 @@ if __name__ == '__main__':
                         abs(jet.eta()) < 2.3 and
                         jet.pt() < 200.5)
                 ]
-                gen_jets = removeOverlap(all_gen_jets, genLeptons)
+                gen_jets = removeOverlap(all_gen_jets, genLeptons, dR2_jetoverlap)
                 refObjs = copy.deepcopy(gen_jets)
         elif runtype in ele_run_types:
             refObjs = copy.deepcopy(genElectrons)
@@ -449,7 +451,7 @@ if __name__ == '__main__':
             refObjs = copy.deepcopy(genMuons)
 
         ###
-        Matched = MatchTausToJets(refObjs)
+        Matched = MatchTausToJets(refObjs, dR2)
 
         ###
         h_ngen.Fill(len(refObjs))
