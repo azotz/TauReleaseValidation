@@ -280,7 +280,17 @@ if __name__ == '__main__':
         Var('tau_ip3d_err', float),
         Var('tau_ip3d_sig', float),
         Var('tau_flightLength', float),
-        Var('tau_flightLength_sig', float)
+        Var('tau_flightLength_sig', float),
+        Var('tau_etaAtEcalEntrance', float),
+        Var('tau_etaAtEcalEntranceLeadChargedCand', float),
+        Var('tau_ptLeadChargedCand', float),
+        Var('tau_phiAtEcalEntrance', float),
+        Var('tau_emFraction_MVA', float),
+        Var('tau_hcalEnergyLeadChargedHadrCand', float),
+        Var('tau_ecalEnergyLeadChargedHadrCand', float),
+        Var('tau_pleadChargedHadrCand', float),
+        Var('tau_hcalEnergyLeadChargedHadrCandFrac', float),
+        Var('tau_ecalEnergyLeadChargedHadrCandFrac', float),
     ]
 
     if tauCollection=="selectedPatTaus":
@@ -623,6 +633,17 @@ if __name__ == '__main__':
                         math.sqrt(tau.flightLength().mag2()))
                     all_var_dict['tau_flightLength_sig'].fill(
                         tau.flightLengthSig())
+
+                all_var_dict['tau_etaAtEcalEntrance'].fill(tau.etaAtEcalEntrance())
+                all_var_dict['tau_etaAtEcalEntranceLeadChargedCand'].fill(tau.etaAtEcalEntranceLeadChargedCand())
+                all_var_dict['tau_phiAtEcalEntrance'].fill(tau.phiAtEcalEntrance())
+                all_var_dict['tau_ptLeadChargedCand'].fill(tau.ptLeadChargedCand())
+                all_var_dict['tau_emFraction_MVA'].fill(tau.emFraction_MVA())
+                all_var_dict['tau_hcalEnergyLeadChargedHadrCand'].fill(tau.hcalEnergyLeadChargedHadrCand())
+                all_var_dict['tau_ecalEnergyLeadChargedHadrCand'].fill(tau.ecalEnergyLeadChargedHadrCand())
+                all_var_dict['tau_pleadChargedHadrCand'].fill(tau.leadChargedHadrCand().p())
+                all_var_dict['tau_hcalEnergyLeadChargedHadrCandFrac'].fill(tau.hcalEnergyLeadChargedHadrCand()/tau.leadChargedHadrCand().p())
+                all_var_dict['tau_ecalEnergyLeadChargedHadrCandFrac'].fill(tau.ecalEnergyLeadChargedHadrCand()/tau.leadChargedHadrCand().p())
 
                 fill_tau_ids(all_var_dict, tau, all_tau_ids)
             tau_tree.Fill()
