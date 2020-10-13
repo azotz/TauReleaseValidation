@@ -76,6 +76,8 @@ def efficiency_plots(d_sample, var_name, hdict):
         if 'against' in var_name:
             den_sel = gen_cut + ' && ' + loose_id
 
+        rel = "tauReco @ miniAOD" if rel=="slimmedTaus_slimmedTaus" else "tauReco @ AOD"
+
         for mvaIDname, sel in discriminators.items():
             graphs.append(makeEffPlotsVars(tree=tree,
                                            varx='tau_genpt',
@@ -198,6 +200,8 @@ def var_plots(d_sample, var_name, hdict):
             return
         hist = TH1F('h_' + var_name + '_' + rel, 'h_' + var_name +
                     '_' + rel, hdict['nbin'], hdict['min'], hdict['max'])
+
+        rel = "tauReco @ miniAOD" if rel=="slimmedTaus_slimmedTaus" else "tauReco @ AOD"
 
         hist.GetYaxis().SetNdivisions(507)
         hist.SetLineColor(rdict['col'])
