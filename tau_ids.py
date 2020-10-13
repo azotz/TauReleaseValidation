@@ -52,12 +52,34 @@ all_tau_ids = [
 lepton_tau_ids = [
     ('againstMuonLoose3', int),
     ('againstMuonTight3', int),
+    ('againstElectronVLooseMVA62018', int),
+    ('againstElectronLooseMVA62018', int),
+    ('againstElectronMediumMVA62018', int),
+    ('againstElectronTightMVA62018', int),
+    ('againstElectronVTightMVA62018', int),
+    ('againstElectronMVA6Raw2018', float),
+]
+
+slimmed_tau_ids = [
+    ('againstMuonLoose3', int),
+    ('againstMuonTight3', int),
     ('againstElectronVLooseMVA6', int),
     ('againstElectronLooseMVA6', int),
     ('againstElectronMediumMVA6', int),
     ('againstElectronTightMVA6', int),
     ('againstElectronVTightMVA6', int),
     ('againstElectronMVA6Raw', float),
+]
+
+selected_pat_tau_ids = [
+    ('againstMuonLooseSimple', int),
+    ('againstMuonTightSimple', int),
+    ('againstElectronVLooseMVA62018', int),
+    ('againstElectronLooseMVA62018', int),
+    ('againstElectronMediumMVA62018', int),
+    ('againstElectronTightMVA62018', int),
+    ('againstElectronVTightMVA62018', int),
+    ('againstElectronMVA6Raw2018', float),
 ]
 
 all_wps = ['VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']
@@ -80,9 +102,9 @@ def create_tau_ids(name, n_wps=7):
 
 
 tau_ids = {
-    'deepTauIDv2p1VSe':create_tau_ids('DeepTau2017v2VSe2017', 4),
-    'deepTauIDv2p1VSmu':create_tau_ids('DeepTau2017v2VSmu2017', 8),
-    'deepTauIDv2p1VSjet':create_tau_ids('DeepTau2017v2VSjet2017', 8),
+    'deepTauIDv2p1VSe':create_tau_ids('DeepTau2017v2p1VSe', 8),
+    'deepTauIDv2p1VSmu':create_tau_ids('DeepTau2017v2p1VSmu', 4),
+    'deepTauIDv2p1VSjet':create_tau_ids('DeepTau2017v2p1VSjet', 8),
     '2017v2':create_tau_ids('IsolationMVArun2017v2DBoldDMwLT2017'),
     '2017v1':create_tau_ids('IsolationMVArun2017v1DBoldDMwLT2017'),
     '2016v1':create_tau_ids('IsolationMVArun2v1DBoldDMwLT2016', 6),
@@ -92,4 +114,4 @@ tau_ids = {
 
 def fill_tau_ids(avd, tau, tau_id_names):
     for (tau_id, _) in tau_id_names:
-        avd['tau_'+tau_id].fill(tau.tauID(tau_id))
+        avd['tau_'+tau_id.replace("2018", "").replace("Simple", "3")].fill(tau.tauID(tau_id))

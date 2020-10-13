@@ -20,7 +20,8 @@ from PhysicsTools.HeppyCore.utils.deltar import deltaR, bestMatch, deltaR2
 from PhysicsTools.Heppy.physicsutils.TauDecayModes import tauDecayModes
 from Var import Var
 from tau_ids import all_tau_ids, lepton_tau_ids, \
-    tau_ids, fill_tau_ids
+    tau_ids, fill_tau_ids, \
+    slimmed_tau_ids, selected_pat_tau_ids
 
 
 from relValTools import addArguments, getFilesFromEOS, \
@@ -282,6 +283,11 @@ if __name__ == '__main__':
         Var('tau_flightLength_sig', float)
     ]
 
+    if tauCollection=="selectedPatTaus":
+        all_tau_ids += selected_pat_tau_ids
+    elif tauCollection=="slimmedTaus":
+        all_tau_ids += slimmed_tau_ids
+
     if not no_anti_lepton:
         all_tau_ids += lepton_tau_ids
 
@@ -289,6 +295,10 @@ if __name__ == '__main__':
         all_tau_ids += tau_ids[mva_id]
 
     for (tau_id, v_type) in all_tau_ids:
+        if tauCollection=="selectedPatTaus":
+            if (tau_id, v_type) in selected_pat_tau_ids:
+                tau_id = tau_id.replace("2018", "").replace("Simple", "3")
+                print 'tau_' + tau_id
         all_vars.append(Var('tau_' + tau_id, v_type))
 
     all_var_dict = {var.name: var for var in all_vars}
