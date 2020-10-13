@@ -30,10 +30,10 @@ from relValTools import addArguments, getFilesFromEOS, \
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gROOT.SetBatch(True)
 
-tau_run_types = ['DYToLL', 'ZTT', 'ZpTT', 'TTbarTau', 'TenTaus']
-jet_run_types = ['QCD', 'TTbar']
-muon_run_types = ['ZMM', 'ZpMM']
-ele_run_types = ['ZEE']
+tau_run_types = ['DYToLL', 'ZTT', 'ZpTT', 'TTbarTau', 'TenTaus', 'truetauDY']
+jet_run_types = ['QCD', 'TTbar', 'jfakeDY', 'jfakeQCD']
+muon_run_types = ['ZMM', 'ZpMM', 'mufakeDY']
+ele_run_types = ['ZEE', 'efakeDY']
 fill_pf_cands = False  # Slows down processing
 fill_lost_cands = False  # Slows down processing
 

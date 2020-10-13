@@ -34,6 +34,11 @@ options_dict = {
     'TTbar': RuntypeOptions(tlabel='TTbar', xlabel='jet p_{T} (GeV)', xlabel_eta='jet #eta'),
     'TTbarTau': RuntypeOptions(tlabel='TTbar #rightarrow #tau+X', xlabel='gen. tau p_{T}^{vis} (GeV)', xlabel_eta='gen. tau #eta^{vis}'),
     'TenTaus': RuntypeOptions(tlabel='Ten taus', xlabel='gen. tau p_{T}^{vis} (GeV)', xlabel_eta='gen. tau #eta^{vis}'),
+    'truetauDY': RuntypeOptions(tlabel='true #tau_{h} (DY)', xlabel='gen. tau p_{T}^{vis} (GeV)', xlabel_eta='gen. tau #eta^{vis}'),
+    'efakeDY': RuntypeOptions(tlabel='e #rightarrow #tau_{h} (DY)', xlabel='gen. e p_{T}^{vis} (GeV)', xlabel_eta='gen. e #eta^{vis}'),
+    'mufakeDY': RuntypeOptions(tlabel='#mu #rightarrow #tau_{h} (DY)', xlabel='gen. #mu p_{T}^{vis} (GeV)', xlabel_eta='gen. #mu #eta^{vis}'),
+    'jfakeDY': RuntypeOptions(tlabel='j #rightarrow #tau_{h} (DY)', xlabel='gen. jet p_{T}^{vis} (GeV)', xlabel_eta='gen. jet #eta^{vis}'),
+    'jfakeQCD': RuntypeOptions(tlabel='j #rightarrow #tau_{h} (QCD, flat #hat{p}_{T} 15-3000GeV)', xlabel='gen. jet p_{T}^{vis} (GeV)', xlabel_eta='gen. jet #eta^{vis}'),
 }
 
 
@@ -268,8 +273,8 @@ if __name__ == '__main__':
         if part != 0:
             if index >= float(len(hvardict.items())) / (totalparts-1) * (part-1): break
             if index < float(len(hvardict.items())) / (totalparts-1) * (part-2): continue
-                
-        if runtype not in ['ZTT', 'TTbarTau', 'TenTaus'] and h_name.find('pt_resolution') != -1:
+
+        if runtype not in ['ZTT', 'TTbarTau', 'TenTaus', 'truetauDY'] and h_name.find('pt_resolution') != -1:
             continue
 
         print "Doing",index+1, ":", h_name

@@ -11,7 +11,7 @@ from sample_mapping import runtype_to_sample
 
 
 def addArguments(parser, produce=True, compare=False):
-    parser.add_argument('--runtype', choices=['DYToLL', 'ZTT', 'ZEE', 'ZMM', 'ZpMM', 'QCD', 'TTbar', 'TTbarTau', 'ZpTT', 'TenTaus'], help='choose sample type')
+    parser.add_argument('--runtype', choices=['DYToLL', 'ZTT', 'ZEE', 'ZMM', 'ZpMM', 'QCD', 'TTbar', 'TTbarTau', 'ZpTT', 'TenTaus', 'truetauDY', 'efakeDY', 'mufakeDY', 'jfakeDY', 'jfakeQCD'], help='choose sample type')
     parser.add_argument('-i', '--inputfiles', default=[], nargs='*', help="List of files locations [Default: %(default)s]")
 
     # useful for debugging
