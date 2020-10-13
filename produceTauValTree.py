@@ -80,7 +80,7 @@ def isGenLepton(lep_cand, pid):
             lep_cand.statusFlags().isPrompt() or
             lep_cand.isDirectPromptTauDecayProductFinalState()
         ) and
-        lep_cand.pt() > 20 and
+        lep_cand.pt() > 8. and
         abs(lep_cand.eta()) < 2.3
     )
 
@@ -381,26 +381,28 @@ if __name__ == '__main__':
             p for p in genParticles if isGenLepton(p, 13)]
 
         # gen leptons to clean jets with respect to them (e.g. for TTBar)
-        genLeptons = [
-            p for p in genParticles
-            if (
-                p.status() == 1 and
-                p.pt() > 15 and
-                (
-                    (
-                        (
-                            abs(p.pdgId()) == 11 or
-                            abs(p.pdgId()) == 13
-                        ) and
-                        p.isPromptFinalState()
-                    ) or
-                    (
-                        abs(p.pdgId()) == 15 and
-                        p.isPromptDecayed()
-                    )
-                )
-            )
-        ]
+        genLeptons = genTaus + genElectrons + genMuons
+        # genLeptons = [
+        #     p for p in genParticles
+        #     if (
+        #         p.status() == 1 and
+        #         # p.pt() > 15 and
+        #         p.pt() > 8. and
+        #         (
+        #             (
+        #                 (
+        #                     abs(p.pdgId()) == 11 or
+        #                     abs(p.pdgId()) == 13
+        #                 ) and
+        #                 p.isPromptFinalState()
+        #             ) or
+        #             (
+        #                 abs(p.pdgId()) == 15 and
+        #                 p.isPromptDecayed()
+        #             )
+        #         )
+        #     )
+        # ]
 
         refObjs = []
         if runtype in tau_run_types:
@@ -413,7 +415,8 @@ if __name__ == '__main__':
                 )
                 if abs(gen_tau.visP4.eta()) > 2.3:
                     continue
-                if gen_tau.visP4.pt() < 10:
+                # if gen_tau.visP4.pt() < 10:
+                if gen_tau.visP4.pt() < 15:
                     continue
                 if gen_dm == -11 or gen_dm == -13:
                     continue
@@ -440,6 +443,7 @@ if __name__ == '__main__':
                 all_gen_jets = [
                     jet for jet in genJetH.product()
                     if (jet.pt() > 20 and
+                    # if (jet.pt() > 10. and
                         abs(jet.eta()) < 2.3 and
                         jet.pt() < 200.5)
                 ]
