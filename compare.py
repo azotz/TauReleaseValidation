@@ -72,7 +72,7 @@ def efficiency_plots(d_sample, var_name, hdict):
             return
         num_sel = reco_cut
         den_sel = '1'
-        discriminators = {"loose_id": den_sel}
+        discriminators = {"": den_sel}
         if 'against' in var_name:
             den_sel = gen_cut + ' && ' + loose_id
 
@@ -255,8 +255,9 @@ if __name__ == '__main__':
     reco_cut = 'tau_pt > 20 && abs(tau_eta) < 2.3'
     gen_cut = 'tau_genpt > 20 && abs(tau_geneta) < 2.3'
     # loose_id = 'tau_decayModeFinding > 0.5 && tau_byLooseCombinedIsolationDeltaBetaCorr3Hits > 0.5'
-    loose_id = 'tau_decayModeFinding > 0.5 && tau_byLooseIsolationMVArun2v1DBoldDMwLT > 0.5'
-    
+    # loose_id = 'tau_decayModeFinding > 0.5 && tau_byLooseIsolationMVArun2v1DBoldDMwLT > 0.5'
+    loose_id = '1.0'
+
     if part in [0, 1]:
         print "First part of plots"
         for h_name, h_dict in vardict.items():
