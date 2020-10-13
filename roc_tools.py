@@ -1,5 +1,5 @@
 import ROOT
-from ROOT import gROOT, gStyle, TEfficiency
+from ROOT import gROOT, gStyle, TEfficiency, TRatioPlot, TPad, TLine
 from officialStyle import officialStyle
 
 gROOT.SetBatch(True)

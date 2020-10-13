@@ -16,12 +16,17 @@ from roc_tools import histsToRoc, makeROCPlot
 class ROCPlotter(object):
 
     scan_vars = [
-        #('tau_chargedIsoPtSum', 'chargedIso'),
-        #('tau_byCombinedIsolationDeltaBetaCorrRaw3Hits', 'combIso'),
-        #('(tau_byCombinedIsolationDeltaBetaCorrRaw3Hits + 10e4*(tau_photonPtSumOutsideSignalCone/tau_pt>0.1))', 'combIsoPtOuter'),
+        ('tau_chargedIsoPtSum', 'chargedIso'),
+        ('tau_byCombinedIsolationDeltaBetaCorrRaw3Hits', 'combIso'),
+        ('(tau_byCombinedIsolationDeltaBetaCorrRaw3Hits + 10e4*(tau_photonPtSumOutsideSignalCone/tau_pt>0.1))', 'combIsoPtOuter'),
         ('0.5-0.5*tau_byIsolationMVArun2v1DBoldDMwLTraw', 'mva'),
-        ('1.-1*tau_byDeepTau2017v2p1VSjetraw', 'deep2017v2p1'),
-        #('tau_byDeepTau2017v2p1VSjetraw', 'deep2017v2p1_inv'),
+        ('0.5-0.5*tau_byIsolationMVArun2v1DBnewDMwLTraw', 'mvaNewDMs'),
+        # ('0.5-0.5*tau_byIsolationMVArun2v1DBoldDMwLTraw', 'mva'),
+        ('1.-1*tau_byDeepTau2017v2p1VSjetraw', 'deep2017v2p1vsjets'),
+        ('1.-1*tau_byDeepTau2017v2p1VSmuraw', 'deep2017v2p1vsmu'),
+        ('1.-1*tau_byDeepTau2017v2p1VSeraw', 'deep2017v2p1vse'),
+        # ('1.-1*tau_byDeepTau2017v2p1VSeraw', 'deep2017v2p1vse'),
+        ('tau_byDeepTau2017v2p1VSjetraw', 'deep2017v2p1_inv'),
     ]
 
     def __init__(self):
@@ -94,9 +99,9 @@ class ROCPlotter(object):
                             help='')
         parser.add_argument('--selection-denominator', default='1', type=str,
                             help='')
-        parser.add_argument('--bins', default='10000', type=int,
+        parser.add_argument('--bins', default='100', type=int,
                             help='')
-        parser.add_argument('--x-min', default='0.01', type=float,
+        parser.add_argument('--x-min', default='0.1', type=float,
                             help='')
         parser.add_argument('--x-max', default='1.0', type=float,
                             help='')
@@ -163,15 +168,19 @@ class ROCPlotter(object):
             self.dprint("scanvars", scan_var, scan_var_name)
 
             # Define such that signal -> 1, background -> 0
-            scan_variable = '(tau_decayModeFinding && tau_pt>20. && abs(tau_eta)<2.3) * (1./(1.+{}))'.format(scan_var)
-            #scan_variable = '(tau_decayModeFinding && tau_pt>20. && abs(tau_eta)<2.3) * ({})'.format(scan_var)
+            # scan_variable = '(tau_decayModeFinding && tau_pt>20. && abs(tau_eta)<2.3) * (1./(1.+{}))'.format(scan_var)
+            scan_variable = '(tau_decayModeFindingNewDMs && tau_dm!=5 && tau_dm!=6 && tau_pt>20. && abs(tau_eta)<2.3) * (1./(1.+{}))'.format(scan_var)
+            # scan_variable = '(tau_decayModeFinding && tau_pt>20. && abs(tau_eta)<2.3 && abs(tau_tauVtxTovtx_dz)<0.2) * (1./(1.+{}))'.format(scan_var)
+            # scan_variable = '(tau_decayModeFinding && tau_pt>0. && abs(tau_eta)<2.3) * (1./(1.+{}))'.format(scan_var)
+            # scan_variable = '(tau_decayModeFinding && tau_pt>20. && abs(tau_eta)<2.3) * ({})'.format(scan_var)
+            print scan_variable
             if self.args.ds_scan_variable == []:
                 self.ds_scan_variable = [scan_variable] * len(self.args.ds_title)
 
             setups = self.getSetups()
             rocs = self.getROCs(setups)
 
-            makeROCPlot(rocs, self.roc_dir + scan_var_name, xmin=self.x_min, xmax=self.x_max, ymin=0.0001 if 'mva' in scan_var_name else 0.001, logy=True)
+            makeROCPlot(rocs, self.roc_dir + scan_var_name, xmin=self.x_min, xmax=self.x_max, ymin=0.0002 if 'mva' in scan_var_name else 0.0002, logy=True)
 
 
 if __name__ == '__main__':
