@@ -152,7 +152,7 @@ class ROCPlotter(object):
             h_b = TH1F('background' + setup.name, '', self.bins+1, -1.0/self.bins, 1.000001)
             chain_b.Draw(setup.scan_variable + '>>' + h_b.GetName(), '&&'.join([self.selection_background, self.selection_denominator]))
 
-            roc = histsToRoc(h_s, h_b, True)
+            roc = histsToRoc(h_s, h_b, False)
             roc.title = setup.title
             rocs.append(roc)
         return rocs

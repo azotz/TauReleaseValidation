@@ -35,7 +35,7 @@ def configureLegend(leg, ncolumn):
     leg.SetFillColor(10)
     leg.SetLineColor(0)
     leg.SetFillStyle(0)
-    leg.SetTextSize(0.02)
+    leg.SetTextSize(0.04)
     leg.SetTextFont(42)
 
 
@@ -55,10 +55,19 @@ def overlay(graphs, header, addon, runtype,
     ymin = min(TMath.MinElement(g.GetN(), g.GetY()) for g in graphs)
     ymax = max(TMath.MaxElement(g.GetN(), g.GetY()) for g in graphs)
 
-    canvas = TCanvas()
+    c = TCanvas(tlabel)
+
+    # Upper plot will be in pad1
+    pad1 = TPad("pad1", "pad1", 0, 0.3, 1, 1.0)
+    pad1.SetBottomMargin(0.03)  # Upper and lower plot are joined
+    pad1.Draw()             # Draw the upper pad: pad1
+    pad1.cd()              # pad1 becomes the current pad
+    pad1.SetLogy(0)
+
     leg = TLegend(0.2, 0.7, 0.5, 0.9)
     configureLegend(leg, 1)
 
+    ratio_graphs = []
     for i_graph, graph in enumerate(graphs):
 
         graph.GetYaxis().SetTitle('efficiency')
@@ -66,12 +75,27 @@ def overlay(graphs, header, addon, runtype,
         graph.SetMarkerSize(1)
         graph.SetMaximum(ymax * 1.4)
         graph.SetMinimum(ymin * 0.80)
+        graph.GetXaxis().SetLabelSize(0.0)
+        graph.GetYaxis().SetTitleSize(0.06)
+        graph.GetYaxis().SetLabelSize(0.06)
         # hist.GetXaxis().SetLimits(hist.GetXaxis().GetXmin()+(3*(ii-3)),
         #                           hist.GetXaxis().GetXmax()+(3*(ii-3)))
         graph.Draw('ap' if i_graph == 0 else 'psame')
 
         legname = graph.GetName()
         # graph.GetPoint(0, x, y)
+
+        if i_graph == 0:
+            refg = graph.Clone()
+        else:
+            rp = graph.Clone()
+            for i_points in range(rp.GetN()):
+                if refg.GetPointY(i_points) != 0.0:
+                    rp.SetPoint(i_points, graph.GetPointX(i_points), graph.GetPointY(i_points)/refg.GetPointY(i_points))
+                else:
+                    rp.SetPoint(i_points, graph.GetPointX(i_points), 0.0)
+            ratio_graphs.append(rp)
+
         leg.AddEntry(graph, legname, 'lep')
 
     leg.Draw()
@@ -85,31 +109,67 @@ def overlay(graphs, header, addon, runtype,
     )
     tex.SetTextAlign(10)
     tex.SetTextFont(42)
-    tex.SetTextSize(0.03)
+    tex.SetTextSize(0.04)
     tex.Draw()
 
-    xshift = 0.87
+    # xshift = 0.0
+    xshift = 0.95
+    # yshift = ymax*1.4
+    yshift = 0.95
     if tlabel.find('QCD') != -1:
-        xshift = 0.6
+        pad1.SetTopMargin(0.1)
+        # xshift = 0.0
+        # yshift = ymax*1.45
+        yshift = 0.95
     if runtype.find('TTbarTau') != -1:
         xshift = 0.78
     tex2 = TLatex(
-        (graphs[-1].GetXaxis().GetXmin() +
-         xshift * (graphs[-1].GetXaxis().GetXmax() -
-                   graphs[-1].GetXaxis().GetXmin())),
-        ymax * 1.4,
+        # (graphs[-1].GetXaxis().GetXmax() +
+        #  xshift * (graphs[-1].GetXaxis().GetXmax() -
+        #            graphs[-1].GetXaxis().GetXmin())),
+        xshift,
+        yshift,
         tlabel
     )
-    tex2.SetTextAlign(10)
+    tex2.SetNDC()
+    tex2.SetTextAlign(32)
+    # tex2.SetTextAlign(30)
     tex2.SetTextFont(42)
-    tex2.SetTextSize(0.03)
+    tex2.SetTextSize(0.04)
     tex2.Draw()
+
+
+    # lower plot will be in pad
+    c.cd()          # Go back to the main canvas before defining pad2
+    pad2 = TPad("pad2", "pad2", 0, 0.0, 1, 0.27)
+    pad2.SetTopMargin(0.03)
+    pad2.SetBottomMargin(0.35)
+    pad2.Draw()
+    pad2.cd()
+    for ii, ratio in enumerate(ratio_graphs):
+        ratio.SetTitle("")
+        ratio.GetXaxis().SetRangeUser(graphs[-1].GetXaxis().GetXmin(), graphs[-1].GetXaxis().GetXmax())
+        # ratio.GetXaxis().SetTitle('#epsilon_{s}')
+        ratio.GetXaxis().SetTitleOffset(0.83)
+        ratio.GetXaxis().SetNdivisions(507)
+        ratio.GetYaxis().SetTitle('ratio')
+        ratio.GetYaxis().SetNdivisions(305)
+        ratio.SetMinimum(0.82)
+        ratio.SetMaximum(1.18)
+        ratio.GetYaxis().SetTitleOffset(0.5)
+        ratio.GetYaxis().SetTitleSize(0.16)
+        ratio.GetYaxis().SetLabelSize(0.16)
+        ratio.GetXaxis().SetTitleSize(0.16)
+        ratio.GetXaxis().SetLabelSize(0.16)
+        ratio.Draw('APsame')
+
+    c.cd()          # Go back to the main canvas
 
     eta = '_eta' if '_eta' in header else ''
 
     dir_name = header.split('_')[0]
     save(
-        canvas,
+        c,
         'compare_' + runtype + comparePerReleaseSuffix +
         '/' + dir_name + eta + '/' + header
     )
@@ -117,7 +177,7 @@ def overlay(graphs, header, addon, runtype,
     try:
         directory2 = dir_translator[header.split('_')[1]]
         save(
-            canvas,
+            c,
             'compare_' + runtype + comparePerReleaseSuffix +
             '/' + directory2 + eta + '/' + header
         )
@@ -125,29 +185,32 @@ def overlay(graphs, header, addon, runtype,
         pass
 
     save(
-        canvas,
+        c,
         'compare_' + runtype +
         comparePerReleaseSuffix + '/all' +
         eta + '/' + header
     )
+    pad1 = None
+    pad2 = None
+    c = None
 
 
 def hoverlay(hists, xtitle, ytitle,
              name, runtype, tlabel,
              xlabel, xlabel_eta, comparePerReleaseSuffix=""):
-    c = TCanvas()
+    c = TCanvas(xlabel)
 
     # Upper plot will be in pad1
     pad1 = TPad("pad1", "pad1", 0, 0.3, 1, 1.0)
-    pad1.SetBottomMargin(0)  # Upper and lower plot are joined
+    pad1.SetBottomMargin(0.03)  # Upper and lower plot are joined
     pad1.Draw()             # Draw the upper pad: pad1
     pad1.cd()              # pad1 becomes the current pad
     pad1.SetLogy(0)
-    if any(subname in name for subname in ['isoPt', 'outOfConePt', 'IsoRaw']):
+    if any(subname in name for subname in ['isoPt', 'outOfConePt', 'IsoRaw', 'deepTau']):
         pad1.SetLogy()
 
     ymax = max([hist.GetMaximum() for hist in hists])
-    leg = TLegend(0.2, 0.65, 0.91, 0.9)
+    leg = TLegend(0.65, 0.65, 0.85, 0.9)
     configureLegend(leg, 1)
 
     hratios = []
@@ -159,6 +222,9 @@ def hoverlay(hists, xtitle, ytitle,
         if pad1.GetLogy > 0:
             hist.SetMinimum(0.001)
         hist.SetMarkerSize(0.)
+        hist.GetXaxis().SetLabelSize(0.0)
+        hist.GetYaxis().SetTitleSize(0.06)
+        hist.GetYaxis().SetLabelSize(0.06)
         hist.GetXaxis().SetTitle(xtitle)
         hist.GetYaxis().SetTitle(ytitle)
 
@@ -171,8 +237,10 @@ def hoverlay(hists, xtitle, ytitle,
             # ihr.Sumw2()
             #ihr.Divide(hists[0])
 
-            ihr = hist_TAR.Clone()
-            ihr.Divide(hist)
+            # ihr = hist_TAR.Clone()
+            # ihr.Divide(hist)
+            ihr = hist.Clone()
+            ihr.Divide(hist_TAR)
 
             ihr.SetStats(0)
             ihr.SetLineColor(hist.GetLineColor())
@@ -184,40 +252,45 @@ def hoverlay(hists, xtitle, ytitle,
 
     leg.Draw()
 
-    xshift = 0.87
-    # xshift=0.7
+    xshift = 0.0
+    yshift = ymax*1.4
     if tlabel.find('QCD') != -1:
-        xshift = 0.6
+        # pad1.SetTopMargin(0.1)
+        xshift = 0.0
+        # yshift = ymax*1.45
     if runtype.find('TTbarTau') != -1:
         xshift = 0.78
-    tex2 = TLatex((hists[0].GetXaxis().GetXmin() +
-                   xshift *
-                   (hists[0].GetXaxis().GetXmax() -
-                    hists[0].GetXaxis().GetXmin())),
-                  ymax * 1.2,
-                  tlabel)
-
-    tex2.SetTextAlign(10)
+    tex2 = TLatex(
+        0.95,
+        0.95,
+        tlabel
+    )
+    tex2.SetNDC()
+    tex2.SetTextAlign(32)
     tex2.SetTextFont(42)
     tex2.SetTextSize(0.043)
     tex2.Draw()
 
     # lower plot will be in pad
     c.cd()          # Go back to the main canvas before defining pad2
-    pad2 = TPad("pad2", "pad2", 0, 0.05, 1, 0.25)
-    pad2.SetTopMargin(0)
-    pad2.SetBottomMargin(0.25)
+    pad2 = TPad("pad2", "pad2", 0, 0.0, 1, 0.27)
+    pad2.SetTopMargin(0.03)
+    pad2.SetBottomMargin(0.35)
     pad2.Draw()
     pad2.cd()
     for ii, hist in enumerate(hratios):
+        hist.GetXaxis().SetTitle(xtitle)
+        hist.GetXaxis().SetTitleOffset(0.83)
+        hist.GetXaxis().SetNdivisions(507)
         hist.GetYaxis().SetTitle('ratio')
+        hist.GetYaxis().SetNdivisions(503)
         hist.SetMinimum(0.75)
         hist.SetMaximum(1.25)
-        hist.GetYaxis().SetTitleOffset(0.33)
-        hist.GetYaxis().SetTitleSize(0.193)
-        hist.GetYaxis().SetLabelSize(0.175)
-        hist.GetXaxis().SetTitleSize(0.193)
-        hist.GetXaxis().SetLabelSize(0.175)
+        hist.GetYaxis().SetTitleOffset(0.45)
+        hist.GetYaxis().SetTitleSize(0.16)
+        hist.GetYaxis().SetLabelSize(0.16)
+        hist.GetXaxis().SetTitleSize(0.16)
+        hist.GetXaxis().SetLabelSize(0.16)
         if ii == 0:
             hist.Draw('ep')
         else:
@@ -232,6 +305,7 @@ def hoverlay(hists, xtitle, ytitle,
          '/histograms/hist_' +
          name)
     )
+    c = None
 
 
 def findLooseId(hname):
