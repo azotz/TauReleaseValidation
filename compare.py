@@ -387,15 +387,29 @@ if __name__ == '__main__':
         print str(part)+". part of plots"
 
     print "Total plots that should be made: "+str(len(hvardict.items()))
-    for index, (h_name, h_dict) in enumerate(hvardict.iteritems()):
-        if part != 0:
-            if index >= float(len(hvardict.items())) / (totalparts-1) * (part-1): break
-            if index < float(len(hvardict.items())) / (totalparts-1) * (part-2): continue
+    if part == 2:
+        for index, (h_name, h_dict) in enumerate(hvardict.iteritems()):
+            # if index >= float(len(hvardict.items())) / (totalparts-1) * (part-1): break
+            # if index < float(len(hvardict.items())) / (totalparts-1) * (part-2): continue
 
-        if runtype not in ['ZTT', 'TTbarTau', 'TenTaus', 'truetauDY'] and h_name.find('pt_resolution') != -1:
-            continue
+            if runtype not in ['ZTT', 'TTbarTau', 'TenTaus', 'truetauDY'] and h_name.find('pt_resolution') != -1:
+                continue
 
-        print "Doing",index+1, ":", h_name
-        var_plots(sampledict, h_name, h_dict)
+            print "Doing",index+1, ":", h_name
+            var_plots(sampledict, h_name, h_dict)
+
+    if part == 3:
+        if args.tau_matching:
+            print "Total plots that should be made: "+str(len(cvardict.items()))
+            for index, (c_name, c_dict) in enumerate(cvardict.iteritems()):
+                # if part != 0:
+                #     if index >= float(len(cvardict.items())) / (totalparts-1) * (part-1): break
+                #     if index < float(len(cvardict.items())) / (totalparts-1) * (part-2): continue
+                #
+                # if runtype not in ['ZTT', 'TTbarTau', 'TenTaus', 'truetauDY'] and c_name.find('pt_resolution') != -1:
+                #     continue
+
+                print "Doing",index+1, ":", c_name
+                cvar_plots(sampledict, c_name, c_dict)
 
     print "Finished"
