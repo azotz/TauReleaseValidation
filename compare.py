@@ -12,10 +12,10 @@ from collections import namedtuple
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 from officialStyle import officialStyle
-from variables import vardict, hvardict
-from compareTools import overlay, hoverlay, makeEffPlotsVars, fillSampledic, findLooseId, shiftAlongX
+from variables import vardict, hvardict, cvardict
+from compareTools import overlay, hoverlay, coverlay, makeEffPlotsVars, fillSampledic, findLooseId, shiftAlongX
 
-from ROOT import gROOT, gStyle, TH1F
+from ROOT import gROOT, gStyle, TH1F, TH2F
 
 import argparse
 from relValTools import addArguments, dprint
@@ -187,10 +187,12 @@ def eff_plots_single(d_sample, vars_to_compare, var_dict):
 
 def var_plots(d_sample, var_name, hdict):
     hists = []
+    trees = []
 
     for rel, rdict in sorted(d_sample.items(), key=lambda item: item[1]["index"]):
 
         tree = rdict['tree']
+        trees.append(tree)
         if 'leaves' not in rdict:
             rdict['leaves'] = [leaf.GetName() for leaf in tree.GetListOfLeaves()]
         used_vars = word_finder(hdict['var'])
@@ -201,7 +203,10 @@ def var_plots(d_sample, var_name, hdict):
         hist = TH1F('h_' + var_name + '_' + rel, 'h_' + var_name +
                     '_' + rel, hdict['nbin'], hdict['min'], hdict['max'])
 
-        rel = "tauReco @ miniAOD" if rel=="slimmedTaus_slimmedTaus" else "tauReco @ AOD"
+        if rel=="slimmedTaus_slimmedTaus":
+            rel = "tauReco @ AOD"
+        elif rel=="selectedPatTaus_selectedPatTaus":
+            rel = "tauReco @ miniAOD"
 
         hist.GetYaxis().SetNdivisions(507)
         hist.SetLineColor(rdict['col'])
@@ -211,12 +216,27 @@ def var_plots(d_sample, var_name, hdict):
         hist.Sumw2()
         hist.GetXaxis().SetTitle(hdict['title'])
 
-        tree.Project(hist.GetName(), hdict['var'], hdict['sel'])
-
-        if hist.Integral(0, hist.GetNbinsX() + 1) > 0:
-            hist.Scale(1. / hist.Integral(0, hist.GetNbinsX() + 1))
+        # tree.Project(hist.GetName(), hdict['var'], hdict['sel'])
+        #
+        # if hist.Integral(0, hist.GetNbinsX() + 1) > 0:
+        #     hist.Scale(1. / hist.Integral(0, hist.GetNbinsX() + 1))
 
         hists.append(hist)
+
+    for i, tree in enumerate(trees):
+        if args.tau_matching:
+            if i == 0:
+                trees[0].AddFriend(trees[1], "ft")
+            elif i == 1:
+                trees[1].AddFriend(trees[0], "ft")
+
+        if additional_selection != "":
+            hdict['sel'] = hdict['sel'] + '&&' + additional_selection
+        # hdict['sel'] = hdict['sel'] + '&&tau_dm==0'
+
+        if hists[i].Integral(0, hists[i].GetNbinsX() + 1) > 0:
+            hists[i].Scale(1. / hists[i].Integral(0, hists[i].GetNbinsX() + 1))
+        tree.Project(hists[i].GetName(), hdict['var'], hdict['sel'])
 
     hoverlay(hists=hists,
              xtitle=hdict['title'],
@@ -226,6 +246,97 @@ def var_plots(d_sample, var_name, hdict):
              tlabel=options_dict[runtype].tlabel,
              xlabel=options_dict[runtype].xlabel,
              xlabel_eta=options_dict[runtype].xlabel_eta)
+
+def cvar_plots(d_sample, var_name, hdict):
+    hists = []
+    trees = []
+    rels = []
+    rdicts = []
+    for rel, rdict in sorted(d_sample.items(), key=lambda item: item[1]["index"]):
+
+        tree = rdict['tree']
+        print rel
+        print rdict['tree']
+        trees.append(tree)
+        if rel=="slimmedTaus_slimmedTaus":
+            rel = "tauReco @ AOD"
+        elif rel=="selectedPatTaus_selectedPatTaus":
+            rel = "tauReco @ miniAOD"
+        rels.append(rel)
+        if 'leaves' not in rdict:
+            rdict['leaves'] = [leaf.GetName() for leaf in tree.GetListOfLeaves()]
+        rdicts.append(rdict)
+        used_vars = word_finder(hdict['var'])
+        if not set(used_vars).issubset(rdict['leaves']):
+            warnings.warn(
+                var_name + ' is missing in input file ' + rdict['file'].GetName())
+            return
+    if hdict['dim'] == 1:
+        hist = TH1F('h_' + var_name + '_' + rels[0], 'h_' + var_name +
+                    '_' + rels[0], hdict['nbin'], hdict['min'], hdict['max'])
+    elif hdict['dim'] == 2:
+        hist = TH2F('h_' + var_name + '_' + rels[0], 'h_' + var_name +
+                    '_' + rels[0], hdict['nbin'], hdict['min'], hdict['max'], hdict['nbin'], hdict['min'], hdict['max'])
+
+
+    aodtree = None
+    miniaodtree = None
+    if rels[0] == "tauReco @ AOD":
+        aodtree = trees[0]
+        miniaodtree = trees[1]
+    elif rels[1] == "tauReco @ AOD":
+        aodtree = trees[1]
+        miniaodtree = trees[0]
+
+    hist.GetYaxis().SetNdivisions(507)
+    hist.SetLineColor(rdicts[0]['col'])
+    hist.SetLineWidth(rdicts[0]['width'])
+    hist.SetMinimum(0)
+    hist.SetName(rels[0])
+    hist.Sumw2()
+    hist.GetXaxis().SetTitle(hdict['title'])
+
+
+    aodtree.AddFriend(miniaodtree, "ft")
+    xtitle = hdict['title']
+    ytitle = 'a.u.'
+
+    if additional_selection != "":
+        hdict['sel'] = hdict['sel'] + '&&' + additional_selection
+    # 'tau_dm==ft.tau_dm'
+    # hdict['sel'] = hdict['sel'] + '&&tau_dm==0'
+    # hdict['sel'] = hdict['sel'] + "&&(tau_hcalEnergyLeadChargedHadrCand-ft.tau_hcalEnergyLeadChargedHadrCand>0.001)"
+
+    if hdict['dim'] == 1:
+        if hdict['norm'] == 'abs':
+            xtitle = 'AOD ' + hdict['title'] + ' - miniAOD ' + hdict['title']
+            aodtree.Project(hist.GetName(), hdict['var'] + "-ft." + hdict['var'], hdict['sel'])
+        elif hdict['norm'] == 'rel':
+            xtitle = '(AOD ' + hdict['title'] + ' - miniAOD ' + hdict['title'] + ')/AOD ' + hdict['title']
+            aodtree.Project(hist.GetName(), "(" + hdict['var'] + "-ft." + hdict['var'] + ")/" + hdict['var'], hdict['sel'])
+        if hist.Integral(0, hist.GetNbinsX() + 1) > 0:
+            hist.Scale(1. / hist.Integral(0, hist.GetNbinsX() + 1))
+    elif hdict['dim'] == 2:
+        xtitle = 'AOD ' + hdict['title']
+        ytitle = 'miniAOD ' + hdict['title']
+        # if hdict['norm'] == 'abs':
+        #     # aodtree.Project(hist.GetName(), hdict['var'] + ":ft." + hdict['var'], hdict['sel'])
+        aodtree.Project(hist.GetName(), "ft." + hdict['var'] + ":" + hdict['var'], hdict['sel'])
+
+
+    hists.append(hist)
+
+    coverlay(hists=hists,
+             xtitle=xtitle,
+             ytitle=ytitle,
+             name=var_name,
+             runtype=runtype,
+             tlabel=options_dict[runtype].tlabel,
+             xlabel=options_dict[runtype].xlabel,
+             xlabel_eta=options_dict[runtype].xlabel_eta,
+             sellabel=additional_selection,
+             norm=hdict['norm'],
+             ndim=hdict['dim'])
 
 
 if __name__ == '__main__':
@@ -239,13 +350,14 @@ if __name__ == '__main__':
     runtype = args.runtype
     releases = args.releases
     globaltags = args.globalTags
+    folders = args.folders
     # The following three are for Olena's variable comparison
     variables = args.variables
     varyLooseId = args.varyLooseId
     colors = args.colors
 
     sampledict = fillSampledic(
-        globaltags, releases, runtype, inputfiles)
+        globaltags, releases, runtype, inputfiles, folders)
 
 
     ptPlotsBinning = array('d', [20, 200]) if args.onebin else array(

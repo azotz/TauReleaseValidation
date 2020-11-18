@@ -3,7 +3,8 @@ import errno
 import pprint
 
 from ROOT import TH1F, TFile, TCanvas, TPad, TLegend, \
-    TGraphAsymmErrors, Double, TLatex, TMath
+    TGraphAsymmErrors, Double, TLatex, TMath, TPaveStats, \
+    gStyle, gPad
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -305,7 +306,192 @@ def hoverlay(hists, xtitle, ytitle,
          '/histograms/hist_' +
          name)
     )
+    pad1 = None
+    pad2 = None
     c = None
+
+def coverlay(hists, xtitle, ytitle,
+             name, runtype, tlabel,
+             xlabel, xlabel_eta, sellabel, comparePerReleaseSuffix="", norm="", ndim=1):
+
+    gStyle.SetOptStat(111110)
+    c = TCanvas()
+    if ndim == 1:
+        c.SetRightMargin(0.10)
+    elif ndim == 2:
+        c.SetRightMargin(0.15)
+    c.SetLeftMargin(0.12)
+    c.SetBottomMargin(0.10)
+    # Upper plot will be in pad1
+    # pad1 = TPad("pad1", "pad1", 0, 0.3, 1, 1.0)
+    # pad1.SetBottomMargin(0.03)  # Upper and lower plot are joined
+    # pad1.Draw()             # Draw the upper pad: pad1
+    # pad1.cd()              # pad1 becomes the current pad
+    # c.SetLogy(0)
+    # if any(subname in name for subname in ['isoPt', 'outOfConePt', 'IsoRaw', 'deepTau']):
+    #     c.SetLogy()
+    if ndim == 1:
+        c.SetLogy()
+    if ndim == 2:
+        c.SetLogz()
+
+    ymax = max([hist.GetMaximum() for hist in hists])
+    # leg = TLegend(0.65, 0.65, 0.85, 0.9)
+    # configureLegend(leg, 1)
+
+    hratios = []
+    for i_hist, hist in enumerate(hists):
+
+        hist.SetMaximum(ymax * 1.2)
+        hist.SetMinimum(0.)
+        # if c.GetLogy > 0:
+        if c.GetLogy > 0:
+            hist.SetMinimum(0.001)
+        hist.GetXaxis().SetTitleSize(0.04)
+        hist.GetXaxis().SetLabelSize(0.04)
+        hist.GetYaxis().SetTitleSize(0.04)
+        hist.GetYaxis().SetLabelSize(0.04)
+        hist.GetXaxis().SetTitle(xtitle)
+        hist.GetYaxis().SetTitle(ytitle)
+
+        if i_hist == 0:
+            if ndim == 1:
+                hist.SetMarkerSize(0.)
+                hist.Draw('h')
+                # gPad.Update()
+                hist.SetStats(1)
+                # st = hist.GetListOfFunctions().FindObject("stats")
+                # # st.SetOptStat(1110)
+                # # st = c.GetPrimitive("stats")
+                # # st.SetNDC()
+                # st.SetX1NDC(0.7)
+                # st.SetX2NDC(0.85)
+            elif ndim == 2:
+                hist.SetMarkerSize(1.2)
+                min_bincontent = 0.005
+                if norm == "abs":
+                    gStyle.SetPaintTextFormat("g")
+                else:
+                    gStyle.SetPaintTextFormat("4.2f")
+                    hist.SetMaximum(100)
+                    hist.SetMinimum(0.0049)
+                if norm == "global":
+                    integral = hist.Integral(1,hist.GetNbinsX(),1,hist.GetNbinsY())
+                    for i in range(1, hist.GetNbinsX() + 1):
+                        for j in range(1, hist.GetNbinsY() + 1):
+                            bincontent = hist.GetBinContent(i,j)/integral*100 if integral > 0 else 0
+                            bincontent = min_bincontent if (bincontent > 0 and bincontent < min_bincontent) else bincontent
+                            hist.SetBinContent(i,j,bincontent)
+                elif norm == "col":
+                    for i in range(1, hist.GetNbinsX() + 1):
+                        integral = hist.Integral(i,i,1,hist.GetNbinsY())
+                        for j in range(1, hist.GetNbinsY() + 1):
+                            bincontent = hist.GetBinContent(i,j)/integral*100 if integral > 0 else 0
+                            bincontent = min_bincontent if (bincontent > 0 and bincontent < min_bincontent) else bincontent
+                            hist.SetBinContent(i,j,bincontent)
+                elif norm == "row":
+                    for j in range(1, hist.GetNbinsY() + 1):
+                        integral = hist.Integral(1,hist.GetNbinsX(),j,j)
+                        for i in range(1, hist.GetNbinsX() + 1):
+                            bincontent = hist.GetBinContent(i,j)/integral*100 if integral > 0 else 0
+                            bincontent = min_bincontent if (bincontent > 0 and bincontent < min_bincontent) else bincontent
+                            hist.SetBinContent(i,j,bincontent)
+                hist.Draw("COLZ TEXT")
+                gPad.RedrawAxis()
+        #     hist_TAR = hist.Clone()
+        else:
+            if ndim == 1:
+                hist.Draw('hsame')
+            elif ndim == 2:
+                hist.Draw("TEXTCOLZsame")
+        #     # ihr = hist.Clone()
+        #     # ihr.Sumw2()
+        #     #ihr.Divide(hists[0])
+        #
+        #     # ihr = hist_TAR.Clone()
+        #     # ihr.Divide(hist)
+        #     ihr = hist.Clone()
+        #     ihr.Divide(hist_TAR)
+        #
+        #     ihr.SetStats(0)
+        #     ihr.SetLineColor(hist.GetLineColor())
+        #     ihr.SetMarkerColor(hist.GetMarkerColor())
+        #     ihr.SetMarkerStyle(hist.GetMarkerStyle())
+        #     hratios.append(ihr)
+        #
+        # leg.AddEntry(hist, hist.GetName(), "l")
+
+    # leg.Draw()
+    #
+    # xshift = 0.0
+    # yshift = ymax*1.4
+    # if tlabel.find('QCD') != -1:
+    #     # pad1.SetTopMargin(0.1)
+    #     xshift = 0.0
+    #     # yshift = ymax*1.45
+    # if runtype.find('TTbarTau') != -1:
+    #     xshift = 0.78
+    tex2 = TLatex(
+        0.95,
+        0.96,
+        tlabel
+    )
+    tex2.SetNDC()
+    tex2.SetTextAlign(32)
+    tex2.SetTextFont(42)
+    tex2.SetTextSize(0.043)
+    tex2.Draw()
+
+    seltex = TLatex(
+        0.02,
+        0.96,
+        sellabel
+    )
+    seltex.SetNDC()
+    seltex.SetTextAlign(12)
+    seltex.SetTextFont(42)
+    seltex.SetTextSize(0.023)
+    seltex.Draw()
+
+    #
+    # # lower plot will be in pad
+    # c.cd()          # Go back to the main canvas before defining pad2
+    # pad2 = TPad("pad2", "pad2", 0, 0.0, 1, 0.27)
+    # pad2.SetTopMargin(0.03)
+    # pad2.SetBottomMargin(0.35)
+    # pad2.Draw()
+    # pad2.cd()
+    # for ii, hist in enumerate(hratios):
+    #     hist.GetXaxis().SetTitle(xtitle)
+    #     hist.GetXaxis().SetTitleOffset(0.83)
+    #     hist.GetXaxis().SetNdivisions(507)
+    #     hist.GetYaxis().SetTitle('ratio')
+    #     hist.GetYaxis().SetNdivisions(503)
+    #     hist.SetMinimum(0.75)
+    #     hist.SetMaximum(1.25)
+    #     hist.GetYaxis().SetTitleOffset(0.45)
+    #     hist.GetYaxis().SetTitleSize(0.16)
+    #     hist.GetYaxis().SetLabelSize(0.16)
+    #     hist.GetXaxis().SetTitleSize(0.16)
+    #     hist.GetXaxis().SetLabelSize(0.16)
+    #     if ii == 0:
+    #         hist.Draw('ep')
+    #     else:
+    #         hist.Draw('epsame')
+
+    c.cd()          # Go back to the main canvas
+    save(
+        c,
+        ('compare_' +
+         runtype +
+         comparePerReleaseSuffix +
+         '/taumatching/hist_' +
+         name + '_' +
+         norm + 'norm_' +
+         str(ndim) +'D')
+    )
+    c = None
+    gStyle.SetOptStat(0)
 
 
 def findLooseId(hname):
@@ -401,11 +587,11 @@ def makeEffPlotsVars(tree,
     return g_eff
 
 
-def fillSampledic(globaltags, releases, runtype, inputfiles=None):
+def fillSampledic(globaltags, releases, runtype, inputfiles=None, trees=None):
     sampledict = {}
     styles = [
         {'col': 1, 'marker': 26, 'width': 2},
-        {'col': 8, 'marker': 25, 'width': 2},
+        {'col': 2, 'marker': 25, 'width': 2},
         {'col': 4, 'marker': 21, 'width': 2},
         {'col': 2, 'marker': 21, 'width': 2},
         {'col': 7, 'marker': 24, 'width': 2},
@@ -434,7 +620,11 @@ def fillSampledic(globaltags, releases, runtype, inputfiles=None):
                 runtype))
         else:
             sampledict[name]['file'] = TFile(inputfiles[index])
-        sampledict[name]['tree'] = sampledict[name]['file'].Get('per_tau')
+        if not trees:
+            sampledict[name]['tree'] = sampledict[name]['file'].Get('per_tau')
+        else:
+            print trees[index]
+            sampledict[name]['tree'] = sampledict[name]['file'].Get(trees[index])
 
         # adding the index such that we can sort the dictionary later to have correct ratio plots
         sampledict[name]['index'] = index

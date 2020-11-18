@@ -41,11 +41,14 @@ def addArguments(parser, produce=True, compare=False):
         parser.add_argument('-b', '--onebin', default=False, action="store_true", help='Plot inclusive efficiencies by only using one bin')
         parser.add_argument('--releases', default=["CMSSW_9_4_0_pre1", "CMSSW_9_4_0_pre2"], nargs='*', help='List of releases')
         parser.add_argument('--globalTags', default=['93X_mc2017_realistic_v3-v1', 'PU25ns_94X_mc2017_realistic_v1-v1'], nargs='*', help='List of global tags [Default: %(default)s]')
+        parser.add_argument('-f', '--folders', default=[], nargs='*', help="Path(s) to ROOT objects. Default: 'per_tau' if left empty")
 
         parser.add_argument('-v', '--variables', default=[], nargs='*', help='Variables to place on a single plot (if only one release+GT)')
         parser.add_argument('-c', '--colors', default=[1, 4], nargs='*', help='Colors of variables to place on a single plot (if only one release+GT)')
         parser.add_argument('--varyLooseId', default=False, action="store_true", help='If the loose Id should be varied')
         parser.add_argument('--setLooseId', default='tau_byLooseIsolationMVArun2v1DBoldDMwLT', help='LooseId to be considered')
+        parser.add_argument('--tau-matching', default=False, action='store_true', help='Make tau matching comparison plots')
+        parser.add_argument('--selection', default='', help='Add additional selection')
 
 
 def dprint(*text):

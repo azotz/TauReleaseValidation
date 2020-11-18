@@ -248,6 +248,9 @@ if __name__ == '__main__':
     all_vars = [
         Var('tau_eventid', int),
         Var('tau_id', int),
+        Var('tau_refidx', int),
+        Var('tau_run', int),
+        Var('tau_lumi', int),
         Var('tau_dm', int),
         Var('tau_pt', float),
         Var('tau_eta', float),
@@ -282,9 +285,10 @@ if __name__ == '__main__':
         Var('tau_flightLength', float),
         Var('tau_flightLength_sig', float),
         Var('tau_etaAtEcalEntrance', float),
+        Var('tau_phiAtEcalEntrance', float),
         Var('tau_etaAtEcalEntranceLeadChargedCand', float),
         Var('tau_ptLeadChargedCand', float),
-        Var('tau_phiAtEcalEntrance', float),
+        Var('tau_pdgidLeadChargedCand', float),
         Var('tau_emFraction_MVA', float),
         Var('tau_hcalEnergyLeadChargedHadrCand', float),
         Var('tau_ecalEnergyLeadChargedHadrCand', float),
@@ -336,6 +340,8 @@ if __name__ == '__main__':
     for event in events:
         evtid += 1
         eid = event.eventAuxiliary().id().event()
+        run = event.eventAuxiliary().id().run()
+        lumi = event.eventAuxiliary().id().luminosityBlock()
 
         if evtid % 1000 == 0 and maxEvents>0:
             if storageSite == "das":
@@ -473,6 +479,9 @@ if __name__ == '__main__':
             for var in all_vars:
                 var.reset()
             all_var_dict['tau_id'].fill(evtid)
+            all_var_dict['tau_refidx'].fill(refidx)
+            all_var_dict['tau_run'].fill(run)
+            all_var_dict['tau_lumi'].fill(lumi)
             all_var_dict['tau_eventid'].fill(eid)
             all_var_dict['tau_vertex'].fill(len(vertices))
             for iPuInfo in puInfo:
@@ -638,6 +647,7 @@ if __name__ == '__main__':
                 all_var_dict['tau_etaAtEcalEntranceLeadChargedCand'].fill(tau.etaAtEcalEntranceLeadChargedCand())
                 all_var_dict['tau_phiAtEcalEntrance'].fill(tau.phiAtEcalEntrance())
                 all_var_dict['tau_ptLeadChargedCand'].fill(tau.ptLeadChargedCand())
+                all_var_dict['tau_pdgidLeadChargedCand'].fill(tau.leadChargedHadrCand().pdgId())
                 all_var_dict['tau_emFraction_MVA'].fill(tau.emFraction_MVA())
                 all_var_dict['tau_hcalEnergyLeadChargedHadrCand'].fill(tau.hcalEnergyLeadChargedHadrCand())
                 all_var_dict['tau_ecalEnergyLeadChargedHadrCand'].fill(tau.ecalEnergyLeadChargedHadrCand())
