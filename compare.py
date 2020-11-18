@@ -35,10 +35,10 @@ options_dict = {
     'TTbarTau': RuntypeOptions(tlabel='TTbar #rightarrow #tau+X', xlabel='gen. tau p_{T}^{vis} (GeV)', xlabel_eta='gen. tau #eta^{vis}'),
     'TenTaus': RuntypeOptions(tlabel='Ten taus', xlabel='gen. tau p_{T}^{vis} (GeV)', xlabel_eta='gen. tau #eta^{vis}'),
     'truetauDY': RuntypeOptions(tlabel='true #tau_{h} (DY)', xlabel='gen. tau p_{T}^{vis} (GeV)', xlabel_eta='gen. tau #eta^{vis}'),
-    'efakeDY': RuntypeOptions(tlabel='e #rightarrow #tau_{h} (DY)', xlabel='gen. e p_{T}^{vis} (GeV)', xlabel_eta='gen. e #eta^{vis}'),
-    'mufakeDY': RuntypeOptions(tlabel='#mu #rightarrow #tau_{h} (DY)', xlabel='gen. #mu p_{T}^{vis} (GeV)', xlabel_eta='gen. #mu #eta^{vis}'),
-    'jfakeDY': RuntypeOptions(tlabel='j #rightarrow #tau_{h} (DY)', xlabel='gen. jet p_{T}^{vis} (GeV)', xlabel_eta='gen. jet #eta^{vis}'),
-    'jfakeQCD': RuntypeOptions(tlabel='j #rightarrow #tau_{h} (QCD, flat #hat{p}_{T} 15-3000GeV)', xlabel='gen. jet p_{T}^{vis} (GeV)', xlabel_eta='gen. jet #eta^{vis}'),
+    'efakeDY': RuntypeOptions(tlabel='e #rightarrow #tau_{h} (DY)', xlabel='gen. e p_{T} (GeV)', xlabel_eta='gen. e #eta'),
+    'mufakeDY': RuntypeOptions(tlabel='#mu #rightarrow #tau_{h} (DY)', xlabel='gen. #mu p_{T} (GeV)', xlabel_eta='gen. #mu #eta'),
+    'jfakeDY': RuntypeOptions(tlabel='j #rightarrow #tau_{h} (DY)', xlabel='gen. jet p_{T} (GeV)', xlabel_eta='gen. jet #eta'),
+    'jfakeQCD': RuntypeOptions(tlabel='j #rightarrow #tau_{h} (QCD, flat #hat{p}_{T} 15-3000GeV)', xlabel='gen. jet p_{T} (GeV)', xlabel_eta='gen. jet #eta}'),
 }
 
 
