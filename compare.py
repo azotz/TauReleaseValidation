@@ -355,6 +355,7 @@ if __name__ == '__main__':
     variables = args.variables
     varyLooseId = args.varyLooseId
     colors = args.colors
+    additional_selection = args.selection
 
     sampledict = fillSampledic(
         globaltags, releases, runtype, inputfiles, folders)
