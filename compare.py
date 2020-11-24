@@ -310,10 +310,11 @@ def cvar_plots(d_sample, var_name, hdict):
     if hdict['dim'] == 1:
         if hdict['norm'] == 'abs':
             xtitle = 'AOD ' + hdict['title'] + ' - miniAOD ' + hdict['title']
-            aodtree.Project(hist.GetName(), hdict['var'] + "-ft." + hdict['var'], hdict['sel'])
+            # aodtree.Project(hist.GetName(), hdict['var'] + "-ft." + hdict['var'], hdict['sel'])
+            aodtree.Project(hist.GetName(), hdict['var'] + '-' + hdict['var'].replace('tau_', 'ft.tau_'), hdict['sel'])
         elif hdict['norm'] == 'rel':
             xtitle = '(AOD ' + hdict['title'] + ' - miniAOD ' + hdict['title'] + ')/AOD ' + hdict['title']
-            aodtree.Project(hist.GetName(), "(" + hdict['var'] + "-ft." + hdict['var'] + ")/" + hdict['var'], hdict['sel'])
+            aodtree.Project(hist.GetName(), '(' + hdict['var'] + '-' + hdict['var'].replace('tau_', 'ft.tau_') + ')/' + hdict['var'], hdict['sel'])
         if hist.Integral(0, hist.GetNbinsX() + 1) > 0:
             hist.Scale(1. / hist.Integral(0, hist.GetNbinsX() + 1))
     elif hdict['dim'] == 2:
@@ -321,7 +322,7 @@ def cvar_plots(d_sample, var_name, hdict):
         ytitle = 'miniAOD ' + hdict['title']
         # if hdict['norm'] == 'abs':
         #     # aodtree.Project(hist.GetName(), hdict['var'] + ":ft." + hdict['var'], hdict['sel'])
-        aodtree.Project(hist.GetName(), "ft." + hdict['var'] + ":" + hdict['var'], hdict['sel'])
+        aodtree.Project(hist.GetName(), hdict['var'].replace('tau_', 'ft.tau_') + ':' + hdict['var'], hdict['sel'])
 
 
     hists.append(hist)

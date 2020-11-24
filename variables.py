@@ -411,7 +411,7 @@ hvardict = {
     'tau_dm_chiso': {'var': 'tau_dm', 'nbin': 12, 'min': 0., 'max': 12, 'title': 'decay Mode', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_chargedIsoPtSum < 2.5'},
     'tau_dm_combiso': {'var': 'tau_dm', 'nbin': 12, 'min': 0., 'max': 12, 'title': 'decay Mode', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_byLooseCombinedIsolationDeltaBetaCorr3Hits > 0.5'},
 
-    'tau_dxy': {'var': 'tau_dxy', 'nbin': 50, 'min': 0., 'max': 0.1, 'title': 'tau_dxy', 'sel': 'tau_genpt>0&&tau_pt>0'},
+    'tau_dxy': {'var': 'tau_dxy', 'nbin': 50, 'min': -0.1, 'max': 0.1, 'title': 'tau_dxy', 'sel': 'tau_genpt>0&&tau_pt>0'},
     'tau_dxy_err': {'var': 'tau_dxy_err', 'nbin': 40, 'min': 0., 'max': 0.02, 'title': 'tau_dxy_err', 'sel': 'tau_genpt>0&&tau_pt>0'},
     'tau_dxy_sig': {'var': 'tau_dxy_sig', 'nbin': 25, 'min': 0., 'max': 5, 'title': 'tau_dxy_sig', 'sel': 'tau_genpt>0&&tau_pt>0'},
 
@@ -420,7 +420,7 @@ hvardict = {
     'tau_flightLength': {'var': 'tau_flightLength', 'nbin': 50, 'min': 0., 'max': 2.0, 'title': 'tau_flightLength', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_flightLength>=0'},
     'tau_flightLength_sig': {'var': 'tau_flightLength_sig', 'nbin': 25, 'min': 0., 'max': 15, 'title': 'tau_flightLength_sig', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_flightLength>=0'},
 
-    'tau_ip3d': {'var': 'tau_ip3d', 'nbin': 50, 'min': 0., 'max': 0.1, 'title': 'tau_ipd3', 'sel': 'tau_genpt>0&&tau_pt>0'},
+    'tau_ip3d': {'var': 'tau_ip3d', 'nbin': 50, 'min': -0.1, 'max': 0.1, 'title': 'tau_ipd3', 'sel': 'tau_genpt>0&&tau_pt>0'},
     'tau_ip3d_err': {'var': 'tau_ip3d_err', 'nbin': 40, 'min': 0., 'max': 0.02, 'title': 'tau_ip3d_err', 'sel': 'tau_genpt>0&&tau_pt>0'},
     'tau_ip3d_sig': {'var': 'tau_ip3d_sig', 'nbin': 25, 'min': 0., 'max': 5, 'title': 'tau_ip3d_sig', 'sel': 'tau_genpt>0&&tau_pt>0'},
 
@@ -482,6 +482,7 @@ cvardict = {
     'tau_lumi': {'var': 'tau_lumi', 'nbin': 101, 'min': -1e-3, 'max': 1e-3, 'title': 'lumi', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
 
     'charged_isoPt': {'var': 'tau_chargedIsoPtSum', 'nbin': 101, 'min': -1e-3, 'max': 1e-3, 'title': 'charged iso [GeV]', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
+    'charged_isoPt_relnorm': {'var': 'tau_chargedIsoPtSum', 'nbin': 101, 'min': -1e-3, 'max': 1e-3, 'title': 'charged iso [GeV]', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'rel'},
     'charged_isoPtNoPV': {'var': 'tau_iso_nopv', 'nbin': 101, 'min': -1e-3, 'max': 1e-3, 'title': 'charged iso (noPV) [GeV]', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
     'charged_isoPt02':{'var':'tau_iso_dz02', 'nbin': 101, 'min': -1e-6, 'max': 1e-6, 'title':'charged iso (|dz|<0.2cm) [GeV]', 'sel':'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
     'charged_isoPtNoPV_frac': {'var': 'tau_iso_nopv/(tau_iso_dz02+0.005)', 'nbin': 101, 'min': -1e-6, 'max': 1e-6, 'title': 'charged iso npPV fraction', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
@@ -492,17 +493,20 @@ cvardict = {
     'nVertex': {'var': 'tau_vertex', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'no. of vertices', 'sel': '1', 'dim': 1, 'norm': 'rel'},
 
     'neutral_isoPt': {'var': 'tau_neutralIsoPtSum', 'nbin': 101, 'min': -1e-3, 'max': 1e-3, 'title': 'neutral iso [GeV]', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
-    # 'neutral_isoPt_corr': {'var': 'max(0,tau_neutralIsoPtSum-0.2*tau_puCorrPtSum)', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'neutral-iso - 0.2*PU-Pt-Sum [GeV]', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
-    # 'neutral_isoPt_corr2': {'var': 'max(0,tau_neutralIsoPtSum-0.2*tau_puCorrPtSum)', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'out-of-cone-Pt/Pt < 0.1; neutral-iso - 0.2*PU-Pt-Sum [GeV]', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_photonPtSumOutsideSignalCone/tau_pt<0.1', 'dim': 1, 'norm': 'abs'},
-    # 'neutral_isoPt_diff': {'var': '2.*(tau_neutralIsoPtSum-tau_iso_neu)/(tau_neutralIsoPtSum+tau_iso_neu)', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': '2*(neutral iso AOD-MiniAOD)/(neutral iso AOD+MiniAOD)', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_neutralIsoPtSum+tau_iso_neu>0', 'dim': 1, 'norm': 'abs'},
+    'neutral_isoPt_relnorm': {'var': 'tau_neutralIsoPtSum', 'nbin': 101, 'min': -1e-3, 'max': 1e-3, 'title': 'neutral iso [GeV]', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'rel'},
+    'neutral_isoPt_corr': {'var': 'max(0,tau_neutralIsoPtSum-0.2*tau_puCorrPtSum)', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'neutral-iso - 0.2*PU-Pt-Sum [GeV]', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
+    'neutral_isoPt_corr2': {'var': 'max(0,tau_neutralIsoPtSum-0.2*tau_puCorrPtSum)', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'out-of-cone-Pt/Pt < 0.1; neutral-iso - 0.2*PU-Pt-Sum [GeV]', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_photonPtSumOutsideSignalCone/tau_pt<0.1', 'dim': 1, 'norm': 'abs'},
+    'neutral_isoPt_diff': {'var': '2.*(tau_neutralIsoPtSum-tau_iso_neu)/(tau_neutralIsoPtSum+tau_iso_neu)', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': '2*(neutral iso AOD-MiniAOD)/(neutral iso AOD+MiniAOD)', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_neutralIsoPtSum+tau_iso_neu>0', 'dim': 1, 'norm': 'abs'},
 
     'outOfConePt_over_pt': {'var': 'tau_photonPtSumOutsideSignalCone/tau_pt', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'out-of-cone-Pt/Pt', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
 
     'pu_isoPt': {'var': 'tau_puCorrPtSum', 'nbin': 101, 'min': -1e-2, 'max': 1e-2, 'title': 'PU charged PtSum [GeV]', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
+    'pu_isoPt_relnorm': {'var': 'tau_puCorrPtSum', 'nbin': 101, 'min': -1e-2, 'max': 1e-2, 'title': 'PU charged PtSum [GeV]', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'rel'},
 
     'tau_CombIsoRaw': {'var': 'tau_byCombinedIsolationDeltaBetaCorrRaw3Hits', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'combined iso (oldDMs) (GeV)', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_decayModeFinding > 0.5', 'dim': 1, 'norm': 'abs'},
 
     'tau_MVA':     {    'var': 'tau_byIsolationMVArun2v1DBoldDMwLTraw', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'Raw IsoMVA (oldDMs)', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_decayModeFinding>0.5', 'dim': 1, 'norm': 'abs'},
+    'tau_MVA_relnorm':     {    'var': 'tau_byIsolationMVArun2v1DBoldDMwLTraw', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'Raw IsoMVA (oldDMs)', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_decayModeFinding>0.5', 'dim': 1, 'norm': 'rel'},
     'tau_MVAIsoRaw':   {'var': 'tau_byIsolationMVArun2v1DBoldDMwLTraw', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'Raw IsoMVA (oldDMs)', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_decayModeFinding>0.5', 'dim': 1, 'norm': 'abs'},
     'tau_MVAIsoRaw_large':   {'var': 'tau_byIsolationMVArun2v1DBoldDMwLTraw', 'nbin': 101, 'min': -4, 'max': 4, 'title': 'Raw IsoMVA (oldDMs)', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_decayModeFinding>0.5', 'dim': 1, 'norm': 'abs'},
     # 'tau_MVAIsoRawPW': {'var': 'tau_byIsolationMVArun2v1PWoldDMwLTraw', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'Raw IsoMVA (oldDMs)', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_decayModeFinding>0.5', 'dim': 1, 'norm': 'abs'},
@@ -511,6 +515,10 @@ cvardict = {
     'tau_deepTau2p1VSjet':     {    'var': 'tau_byDeepTau2017v2p1VSjetraw', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'RawDeepTau2.1 vs Jets (oldDMs)', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_decayModeFinding>0.5', 'dim': 1, 'norm': 'abs'},
     'tau_deepTau2p1VSe':       {    'var': 'tau_byDeepTau2017v2p1VSeraw', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'RawDeepTau2.1 vs Electrons (oldDMs)', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_decayModeFinding>0.5', 'dim': 1, 'norm': 'abs'},
     'tau_deepTau2p1VSmu':      {    'var': 'tau_byDeepTau2017v2p1VSmuraw', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'RawDeepTau2.1 vs Muons (oldDMs)', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_decayModeFinding>0.5', 'dim': 1, 'norm': 'abs'},
+
+    'tau_deepTau2p1VSjet_relnorm':     {    'var': 'tau_byDeepTau2017v2p1VSjetraw', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'RawDeepTau2.1 vs Jets (oldDMs)', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_decayModeFinding>0.5', 'dim': 1, 'norm': 'rel'},
+    'tau_deepTau2p1VSe_relnorm':       {    'var': 'tau_byDeepTau2017v2p1VSeraw', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'RawDeepTau2.1 vs Electrons (oldDMs)', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_decayModeFinding>0.5', 'dim': 1, 'norm': 'rel'},
+    'tau_deepTau2p1VSmu_relnorm':      {    'var': 'tau_byDeepTau2017v2p1VSmuraw', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'RawDeepTau2.1 vs Muons (oldDMs)', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_decayModeFinding>0.5', 'dim': 1, 'norm': 'rel'},
 
     'tau_deepTau2p1VSjetnewDMs':     {    'var': 'tau_byDeepTau2017v2p1VSjetraw', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'RawDeepTau2.1 vs Jets (newDMs)', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_decayModeFindingNewDMs>0.5', 'dim': 1, 'norm': 'abs'},
     'tau_deepTau2p1VSenewDMs':       {    'var': 'tau_byDeepTau2017v2p1VSeraw', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'RawDeepTau2.1 vs Electrons (newDMs)', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_decayModeFindingNewDMs>0.5', 'dim': 1, 'norm': 'abs'},
@@ -537,7 +545,7 @@ cvardict = {
     'tau_oldDm_combiso': {'var': 'tau_dm', 'nbin': 12, 'min': 0, 'max': 12, 'title': 'Old decay Mode', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_byLooseCombinedIsolationDeltaBetaCorr3Hits > 0.5&&tau_decayModeFinding>0.5&&ft.tau_decayModeFinding>0.5', 'dim': 2, 'norm': 'abs'},
 
     'tau_dxy': {'var': 'tau_dxy', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'tau_dxy', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
-    'tau_dxy_err': {'var': 'tau_dxy_err', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'tau_dxy_err', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
+    'tau_dxy_err': {'var': 'tau_dxy_err', 'nbin': 101, 'min': -0.01, 'max': 0.01, 'title': 'tau_dxy_err', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
     'tau_dxy_sig': {'var': 'tau_dxy_sig', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'tau_dxy_sig', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
 
     'tau_eta': {'var': 'tau_eta', 'nbin': 101, 'min': -1e-4, 'max': 1e-4, 'title': 'eta', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
@@ -546,7 +554,7 @@ cvardict = {
     'tau_flightLength_sig': {'var': 'tau_flightLength_sig', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'tau_flightLength_sig', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_flightLength>=0', 'dim': 1, 'norm': 'abs'},
 
     'tau_ip3d': {'var': 'tau_ip3d', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'tau_ipd3', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
-    'tau_ip3d_err': {'var': 'tau_ip3d_err', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'tau_ip3d_err', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
+    'tau_ip3d_err': {'var': 'tau_ip3d_err', 'nbin': 101, 'min': -0.01, 'max': 0.01, 'title': 'tau_ip3d_err', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
     'tau_ip3d_sig': {'var': 'tau_ip3d_sig', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'tau_ip3d_sig', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
 
     'tau_mass_1prong_absnorm': {'var': 'tau_mass', 'nbin': 101, 'min': -1e-2, 'max': 1e-2, 'title': 'Tau mass, 1prong', 'sel': 'tau_genpt>0&&tau_pt>0&&tau_dm==0', 'dim': 1, 'norm': 'abs'},
@@ -567,6 +575,10 @@ cvardict = {
     'tau_phi_large': {'var': 'tau_phi', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'phi', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
     'tau_phi_verylarge': {'var': 'tau_phi', 'nbin': 101, 'min': -10, 'max': 100, 'title': 'phi', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
     'tau_pt': {'var': 'tau_pt', 'nbin': 101, 'min': -1e-3, 'max': 1e-3, 'title': 'p_{T}', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'rel'},
+
+    'gentau_phi': {'var': 'tau_genphi', 'nbin': 101, 'min': -1e-3, 'max': 1e-3, 'title': 'gen. phi', 'sel': 'tau_genpt>0&&ft.tau_genpt>0', 'dim': 1, 'norm': 'abs'},
+    'gentau_pt': {'var': 'tau_genpt', 'nbin': 101, 'min': -1e-3, 'max': 1e-3, 'title': 'gen. p_{T}', 'sel': 'tau_genpt>0&&ft.tau_genpt>0', 'dim': 1, 'norm': 'abs'},
+    'gentau_eta': {'var': 'tau_geneta', 'nbin': 101, 'min': -1e-3, 'max': 1e-3, 'title': 'gen. eta', 'sel': 'tau_genpt>0&&ft.tau_genpt>0', 'dim': 1, 'norm': 'abs'},
 
     'tau_etaAtEcalEntrance' : {'var': 'tau_etaAtEcalEntrance', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'eta at EcalEntrance', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
     'tau_etaAtEcalEntranceLeadChargedCand' : {'var': 'tau_etaAtEcalEntranceLeadChargedCand', 'nbin': 101, 'min': -0.1, 'max': 0.1, 'title': 'eta at EcalEntranceLeadChargedCand', 'sel': 'tau_genpt>0&&tau_pt>0', 'dim': 1, 'norm': 'abs'},
